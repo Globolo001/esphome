@@ -463,6 +463,13 @@ void ESPNowComponent::handle_internal_sent(ESPNowPacket packet, bool status) {
 }
 
 bool ESPNowComponent::send(ESPNowPacket packet) {
+#ifdef USE_WIFI
+  if (!this->can_proceed()) {
+    ESP_LOGW(TAG, "Network not ready, declining message send.");
+    return false;
+  }
+#endif
+
   if (packet.peer == this->own_peer_address_) {
     ESP_LOGE(TAG, "Tried to peer your self.");
   } else if (!this->is_ready()) {
